@@ -12,11 +12,13 @@ st.write(
 )
 
 # --- Load the Data ---
-# Use the full, explicit path to the data file.
-file_path = r"C:\Users\thist\Downloads\home-credit-default-risk\final_engineered_data.csv"
+# Define the relative path to your data file.
+# This works as long as the CSV is in the same folder as your script.
+file_path = "final_engineered_data.csv"
 
 @st.cache_data # Cache the data to speed up the app
 def load_data(path):
+    # This function now correctly uses the path variable and has the right syntax
     return pd.read_csv(path)
 
 try:
@@ -29,6 +31,7 @@ try:
     # 1. External Credit Scores
     st.subheader("Impact of External Credit Scores")
     fig, ax = plt.subplots()
+    # Use fillna(0) to handle any potential missing values for plotting
     sns.kdeplot(final_data.loc[final_data['TARGET'] == 0, 'EXT_SOURCE_2'].fillna(0), label='Repaid', ax=ax, fill=True)
     sns.kdeplot(final_data.loc[final_data['TARGET'] == 1, 'EXT_SOURCE_2'].fillna(0), label='Default', ax=ax, fill=True)
     ax.legend()
@@ -38,6 +41,7 @@ try:
     # 2. Age
     st.subheader("Impact of Applicant Age")
     fig, ax = plt.subplots()
+    # Convert age from negative days to positive years
     sns.kdeplot(final_data.loc[final_data['TARGET'] == 0, 'DAYS_BIRTH'] / -365, label='Repaid', ax=ax, fill=True)
     sns.kdeplot(final_data.loc[final_data['TARGET'] == 1, 'DAYS_BIRTH'] / -365, label='Default', ax=ax, fill=True)
     ax.set_xlabel("Age (years)")
@@ -46,4 +50,4 @@ try:
     st.write("Younger applicants represent a higher risk of default compared to older, more established clients.")
 
 except FileNotFoundError:
-    st.error(f"Error: The data file was not found at {file_path}. Please ensure you have run the saving script first.")
+    st.error(f"Error: The data file was not found. Make sure '{file_path}' is in the same directory as your dashboard script.")
